@@ -8,12 +8,24 @@ const prisma = new PrismaClient()
 async function createProfile(req, res) {
   const { name } = req.body
 
-  if (!name || typeof name !== 'string' || name.trim() === '') {
+  // 1. Vérifier si name existe
+  if (name === undefined || name === null || name === '') {
+    return res.status(400).json({ status: 'error', message: 'Missing or empty name' })
+  }
+
+  // 2. Vérifier si name est bien une string
+  if (typeof name !== 'string') {
+    return res.status(422).json({ status: 'error', message: 'Invalid type' })
+  }
+
+  // 3. Vérifier si name n'est pas vide après trim
+  if (name.trim() === '') {
     return res.status(400).json({ status: 'error', message: 'Missing or empty name' })
   }
 
   const cleanName = name.trim().toLowerCase()
 
+  // Vérifier si le profil existe déjà (idempotence)
   const existing = await prisma.profile.findUnique({ where: { name: cleanName } })
   if (existing) {
     return res.status(200).json({
