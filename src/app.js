@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
-const profileRoutes = require('./src/routes/profiles');
+const profileRoutes = require('./routes/profiles');
 
 const app = express();
 
@@ -13,10 +13,6 @@ app.use((req, res, next) => {
 });
 app.use(express.json());
 
-// Route Stage 0 — on la garde !
-app.get('/api/classify', require('./src/controllers/classifyController'));
-
-// Routes Stage 1
 app.use('/api/profiles', profileRoutes);
 
 const PORT = process.env.PORT || 3000;
